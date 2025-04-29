@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Cigarette Pack Game</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+    #container {
+      text-align: center;
+      position: relative;
+      width: 300px;
+      height: 500px;
+    }
+    #cigarette-pack, #open-pack, #cigarette, #lit-cigarette {
+      height: auto;
+      cursor: pointer;
+      display: none;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    #cigarette-pack, #open-pack {
+      width: 200px;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #cigarette, #lit-cigarette {
+      width: 50px;
+    }
+    #cigarette-pack {
+      display: block;
+    }
+    #cigarette {
+      top: -200px; /* Start above the screen */
+      transition: top 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+    #cigarette.slide-in {
+      top: 50%; /* Match the lit cigarette's position */
+      transform: translate(-50%, -50%);
+    }
+    #lit-cigarette-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #lit-cigarette {
+      top: 0; /* Relative to the container */
+      transform: translateX(-50%); /* Only center horizontally within the container */
+      position: relative; /* Make it a positioning context for name and face */
+    }
+    #name-display {
+      display: none;
+      position: absolute;
+      top: 70%; /* Position below the face image */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 16px; /* Reduced size to fit on cigarette */
+      font-weight: bold;
+      color: #333;
+      text-shadow: 1px 1px 2px #fff;
+      width: 100%;
+      text-align: center;
+    }
+    #face-image {
+      display: none;
+      position: absolute;
+      top: 50%; /* Center on the lit cigarette */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 75px; /* Increased by 250% (30px * 2.5) */
+      height: 75px;
+      border-radius: 50%;
+      border: 1px solid #333; /* Thinner border */
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <img id="cigarette-pack" src="CigarettePack.png" alt="Cigarette Pack">
+    <img id="open-pack" src="OpenCigarettePack.png" alt="Open Pack">
+    <img id="cigarette" src="Cigarette.png" alt="Cigarette">
+    <div id="lit-cigarette-container">
+      <img id="lit-cigarette" src="LitCigarette.png" alt="Lit Cigarette">
+      <div id="name-display"></div>
+      <img id="face-image" src="" alt="Face">
+    </div>
+  </div>
+  <script>
+    const pack = document.getElementById('cigarette-pack');
+    const openPack = document.getElementById('open-pack');
+    const cigarette = document.getElementById('cigarette');
+    const litCigarette = document.getElementById('lit-cigarette');
+    const litCigaretteContainer = document.getElementById('lit-cigarette-container');
+    const nameDisplay = document.getElementById('name-display');
+    const faceImage = document.getElementById('face-image');
+
+    // Updated list of names and corresponding face images with correct file names
+    const people = [
+      { name: 'Brian', face: 'Brian.jpg' },
+      { name: 'Cam', face: 'Cam.PNG' },
+      { name: 'Dan', face: 'Dan.jpg' },
+      { name: 'Noah', face: 'Noah.jpg' },
+      { name: 'Rahul', face: 'Rahul.jpg' },
+      { name: 'Rob', face: 'Rob.jpg' }
+    ];
+
+    let state = 'pack-closed';
+
+    pack.addEventListener('click', () => {
+      if (state === 'pack-closed') {
+        pack.style.display = 'none';
+        openPack.style.display = 'block';
+        state = 'pack-open';
+      }
+    });
+
+    openPack.addEventListener('click', () => {
+      if (state === 'pack-open') {
+        openPack.style.display = 'none';
+        cigarette.style.display = 'block';
+        setTimeout(() => cigarette.classList.add('slide-in'), 10);
+        state = 'cigarette-out';
+      }
+    });
+
+    cigarette.addEventListener('click', () => {
+      if (state === 'cigarette-out') {
+        cigarette.style.display = 'none';
+        litCigaretteContainer.style.display = 'block';
+        litCigarette.style.display = 'block';
+        // Select random person
+        const person = people[Math.floor(Math.random() * people.length)];
+        nameDisplay.textContent = person.name;
+        nameDisplay.style.display = 'block';
+        faceImage.src = person.face;
+        faceImage.style.display = 'block';
+        state = 'cigarette-lit';
+      }
+    });
+
+    // Reset on clicking lit cigarette
+    litCigarette.addEventListener('click', () => {
+      litCigaretteContainer.style.display = 'none';
+      litCigarette.style.display = 'none';
+      nameDisplay.style.display = 'none';
+      faceImage.style.display = 'none';
+      openPack.style.display = 'none';
+      cigarette.style.display = 'none'; // Reset unlit cigarette visibility
+      cigarette.classList.remove('slide-in'); // Reset slide-in class
+      pack.style.display = 'block';
+      state = 'pack-closed';
+    });
+  </script>
+</body>
+</html>
